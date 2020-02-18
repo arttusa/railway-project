@@ -9,13 +9,11 @@ from pprint import pprint
 import xml.etree.ElementTree as ET
 import config
 
-# in the end this suppose to be method that checks if the locations database differs from current day file and do the changes
 def parseLocationRef():
     date = "20200217"
     for file in os.listdir("./PPTimetable"):
         if date in file and "ref" in file and "v3" in file and file.endswith(".xml"): # find the right file
             unzippedfilepath = "./PPTimetable/"+file
-
 
     tree = ET.parse(unzippedfilepath)
     root = tree.getroot()
@@ -90,10 +88,7 @@ def parseJourneys():
             train['origin'] = origin
             train['destination'] = destination # here because it is always the last child of the journey object
             allTrains.append(train) # inserting finally when destination has got
-            
-                
-
-    
+ 
     # updating database with journeys information
     json_data = json.dumps(allTrains, indent=2)
     print(json_data)
@@ -104,11 +99,9 @@ def parseJourneys():
     mycollection.update_one({'tpl' : stationTPL}, 
         {'$set' : {"trains" : allTrains}})
     
-    print(x)
     print("finished")
     
 
-    
 
 def fetchAWS ():
     # amazon credentials 

@@ -1,21 +1,3 @@
-#
-# National Rail Open Data client demonstrator
-# Copyright (C)2019 OpenTrainTimes Ltd.
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
-#
-
 import stomp
 import zlib
 import io
@@ -26,12 +8,6 @@ import config
 import mongo_handler
 from pymongo import MongoClient
 
-
-
-try:
-    import PPv16
-except ModuleNotFoundError:
-    print("Please configure the client following steps in README.md!")
     
 USERNAME = config.DARWIN_USERNAME
 PASSWORD = config.DARWIN_PASSWORD    
@@ -43,12 +19,6 @@ TOPIC = '/topic/darwin.pushport-v16'
 CLIENT_ID = socket.getfqdn()
 HEARTBEAT_INTERVAL_MS = 15000
 RECONNECT_DELAY_SECS = 15
-
-if USERNAME == '':
-    raise Exception("Please configure your username and password in opendata-nationalrail-client.py!")
-
-
-
 
 
 def connect_and_subscribe(connection):
@@ -69,7 +39,6 @@ def connect_and_subscribe(connection):
                          ack='auto',
                          headers=subscribe_header)
 
-
 class StompClient(stomp.ConnectionListener):
 
     def on_heartbeat(self):
@@ -89,25 +58,11 @@ class StompClient(stomp.ConnectionListener):
     def on_connecting(self, host_and_port):
         print('Connecting to ' + host_and_port[0])
 
-
-
-
-
-
     def on_message(self, headers, message):
         try:
-            #print('\n----\nGot a message!')
-
             msg = zlib.decompress(message, zlib.MAX_WBITS | 32)
             #print('\n\t* Decompressed message: %s' % msg)
-
-            #obj = PPv16.CreateFromDocument(msg)
-
-            #print('\n\t* Received a Push Port message from %s' % obj.ts)
-
             tree = ET.fromstring(msg)
-            # let's use as an example New Mills Central tpl="NWMILSC"
-
             stationTPL = 'LVRPLSH'
             
             for child in tree:
@@ -154,7 +109,6 @@ class StompClient(stomp.ConnectionListener):
             
         except Exception as e:
             print("\n\tError: %s\n--------\n" % str(e))
-
 
 conn = stomp.Connection12([(HOSTNAME, HOSTPORT)],
                           auto_decode=False,
